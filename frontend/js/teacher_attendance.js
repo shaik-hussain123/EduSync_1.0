@@ -53,17 +53,33 @@ async function startSession() {
 
 function renderQR(token) {
     const container = document.getElementById('qrcode');
+    if (!container) return;
     container.innerHTML = ''; // clear
-    qrCodeInstance = new QRCode(container, {
-        text: token,
-        width: 200,
-        height: 200
-    });
+    
+    const tokenEl = document.getElementById('lbl-token');
+    if (tokenEl) tokenEl.textContent = token;
+
+    if (typeof QRCode === 'undefined') {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+        script.onload = () => {
+            try {
+                new QRCode(container, { text: token, width: 180, height: 180 });
+            } catch (e) { console.error(e); }
+        };
+        document.head.appendChild(script);
+    } else {
+        try {
+            new QRCode(container, { text: token, width: 180, height: 180 });
+        } catch (e) { console.error(e); }
+    }
 }
 
 function startTimers() {
     countdown = 15;
     document.getElementById('qr-timer').textContent = countdown;
+    const bar = document.getElementById('qr-progress-bar');
+    if (bar) bar.style.width = '100%';
     
     if(qrRotationTimer) clearInterval(qrRotationTimer);
     if(liveFeedTimer) clearInterval(liveFeedTimer);
@@ -74,7 +90,10 @@ function startTimers() {
             if(sessionActive) await rotateQR();
             countdown = 15;
         }
-        document.getElementById('qr-timer').textContent = countdown;
+        const timerEl = document.getElementById('qr-timer');
+        if (timerEl) timerEl.textContent = countdown;
+        const pBar = document.getElementById('qr-progress-bar');
+        if (pBar) pBar.style.width = `${Math.round((countdown / 15) * 100)}%`;
     }, 1000);
     
     liveFeedTimer = setInterval(fetchLiveFeed, 3000);

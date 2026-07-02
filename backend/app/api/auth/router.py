@@ -16,6 +16,7 @@ from fastapi import APIRouter, UploadFile, File, Form, HTTPException, status
 from fastapi.responses import JSONResponse
 from datetime import date
 from typing import Optional
+from pydantic import BaseModel
 
 from app.core.database import get_database
 from app.schemas.student import (
@@ -208,3 +209,107 @@ async def student_login(request: StudentLoginRequest):
     """
     db = get_database()
     return await login_student(request, db)
+
+
+class UnifiedLoginRequest(BaseModel):
+    role: str
+    email: str
+    password: str
+
+@router.post("/login")
+async def unified_login(payload: UnifiedLoginRequest):
+    """
+    Unified login endpoint supporting Student, Teacher, and Admin roles.
+    """
+    db = get_database()
+    role = payload.role.lower()
+    
+    if role == "student":
+        from app.schemas.student import StudentLoginRequest
+        student_req = StudentLoginRequest(email=payload.email, password=payload.password)
+        try:
+            res = await login_student(student_req, db)
+            student_data = res.student
+            if hasattr(student_data, "model_dump"):
+                student_dict = student_data.model_dump()
+            elif hasattr(student_data, "__dict__"):
+                student_dict = student_data.__dict__
+            else:
+                student_dict = student_data
+            return {
+                "success": True,
+                "redirect": "/student/dashboard",
+                "access_token": res.access_token,
+                "token_type": res.token_type,
+                "student": student_dict
+            }
+        except HTTPException as e:
+            return {
+                "success": False,
+                "message": e.detail
+            }
+            
+    elif role == "teacher":
+        from app.schemas.teacher import TeacherLoginRequest
+        from app.services.teacher_service import authenticate_teacher
+        teacher_req = TeacherLoginRequest(email=payload.email, password=payload.password)
+        try:
+            teacher = await authenticate_teacher(teacher_req, db)
+            teacher_id = str(teacher["_id"])
+            token_payload = {
+                "teacher_id": teacher_id,
+                "email": teacher["email"],
+                "role": "teacher"
+            }
+            access_token = create_access_token(token_payload)
+            return {
+                "success": True,
+                "redirect": "/teacher/dashboard",
+                "access_token": access_token,
+                "token_type": "bearer",
+                "teacher": {
+                    "id": teacher_id,
+                    "employee_id": teacher.get("employee_id"),
+                    "full_name": teacher.get("full_name", "Teacher"),
+                    "email": teacher["email"],
+                    "department": teacher.get("department")
+                }
+            }
+        except HTTPException as e:
+            return {
+                "success": False,
+                "message": e.detail
+            }
+            
+    elif role == "admin":
+        admin = await db["admins"].find_one({"email": payload.email})
+        if not admin or not verify_password(payload.password, admin.get("password_hash", "")):
+            return {
+                "success": False,
+                "message": "Invalid email or password"
+            }
+        admin_id = str(admin["_id"])
+        token_payload = {
+            "admin_id": admin_id,
+            "email": admin["email"],
+            "role": "admin"
+        }
+        access_token = create_access_token(token_payload)
+        return {
+            "success": True,
+            "redirect": "/admin/dashboard",
+            "access_token": access_token,
+            "token_type": "bearer",
+            "admin": {
+                "id": admin_id,
+                "full_name": admin.get("full_name", "Admin"),
+                "email": admin["email"],
+                "role": "admin"
+            }
+        }
+    else:
+        return {
+            "success": False,
+            "message": f"Invalid role: {payload.role}"
+        }
+

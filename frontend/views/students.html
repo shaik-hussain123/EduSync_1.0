@@ -1,0 +1,59 @@
+<div class="welcome-row">
+    <h1>Student Management</h1>
+    <p class="welcome-sub">Search, verify, block, or delete student accounts.</p>
+</div>
+
+<div class="widget" style="margin-bottom: 24px; padding: 20px;">
+    <div class="row g-3">
+        <div class="col-md-4">
+            <label class="form-label small fw-bold">Search Name/Email/USN</label>
+            <input type="text" id="admin-student-search" class="form-control" placeholder="Type search term..." oninput="filterStudents()">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label small fw-bold">Department</label>
+            <select id="admin-student-filter-dept" class="form-select" onchange="filterStudents()">
+                <option value="">All Departments</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label small fw-bold">Verification Status</label>
+            <select id="admin-student-filter-verify" class="form-select" onchange="filterStudents()">
+                <option value="">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+            </select>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button class="btn btn-outline-secondary w-100" onclick="clearStudentFilters()">Reset</button>
+        </div>
+    </div>
+</div>
+
+<div class="widget">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle" style="margin-bottom: 0;">
+            <thead>
+                <tr>
+                    <th>Photo</th>
+                    <th>Name</th>
+                    <th>USN</th>
+                    <th>Dept / Sem / Sec</th>
+                    <th>Verification</th>
+                    <th>Account Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="admin-students-table-body">
+                <tr>
+                    <td colspan="7">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-secondary spinner-border-sm" role="status"></div>
+                            <span class="ms-2">Loading students...</span>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

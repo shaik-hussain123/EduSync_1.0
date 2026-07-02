@@ -1,0 +1,30 @@
+<div class="welcome-row">
+    <h1>System Audit Logs</h1>
+    <p class="welcome-sub">View administrative actions, logins, and security audit history.</p>
+</div>
+
+<div class="widget">
+    <div class="table-responsive">
+        <table class="table table-striped align-middle" style="margin-bottom: 0;">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Action Type</th>
+                    <th>Performed By</th>
+                    <th>Target Entity</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody id="admin-audit-table-body">
+                <tr>
+                    <td colspan="5">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-secondary spinner-border-sm" role="status"></div>
+                            <span class="ms-2">Loading system audit logs...</span>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

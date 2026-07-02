@@ -45,7 +45,7 @@ function calcPct(profile) {
 function renderProfilePage(profile) {
     const pct     = profile.profile_completion_pct ?? calcPct(profile);
     const photoSrc = profile.profile_photo
-        ? `http://127.0.0.1:8000/${profile.profile_photo}`
+        ? `${API_BASE_URL.replace('/api/v1', '')}/${profile.profile_photo}`
         : null;
 
     const avatarHtml = photoSrc
@@ -59,6 +59,39 @@ function renderProfilePage(profile) {
         approved: 'badge-approved',
         rejected: 'badge-rejected',
     }[profile.verification_status] || 'badge-pending';
+
+    const isTeacher = (typeof currentRole !== 'undefined' && currentRole === 'teacher');
+    const academicSectionTitle = isTeacher ? 'Professional Information' : 'Academic Information';
+
+    const viewAcademicFields = isTeacher
+        ? `
+            ${viewField('Employee ID', profile.employee_id || profile.usn)}
+            ${viewField('Department',  profile.department, true)}
+            ${viewField('Designation', profile.designation || 'Assistant Professor')}
+            ${viewField('Subjects',    Array.isArray(profile.subjects) && profile.subjects.length ? profile.subjects.join(', ') : 'None')}
+          `
+        : `
+            ${viewField('USN',        profile.usn,        true)}
+            ${viewField('Department', profile.department, true)}
+            ${viewField('Semester',   profile.semester != null ? `Semester ${profile.semester}` : null)}
+            ${viewField('Section',    profile.section  ? `Section ${profile.section}` : null)}
+          `;
+
+    const editAcademicFields = isTeacher
+        ? `
+            ${editField('employee_id', 'Employee ID', 'text', profile.employee_id || profile.usn)}
+            ${editFieldReadOnly('department', 'Department', profile.department)}
+            ${editField('designation', 'Designation', 'text', profile.designation || 'Assistant Professor')}
+          `
+        : `
+            ${editFieldReadOnly('usn',        'USN',        profile.usn)}
+            ${editFieldReadOnly('department', 'Department', profile.department)}
+            ${editField('semester', 'Semester', 'number',   profile.semester, 'min="1" max="8"')}
+            ${editFieldSelect('section', 'Section',
+                ['', 'A', 'B', 'C', 'D'],
+                ['Select Section', 'A', 'B', 'C', 'D'],
+                profile.section)}
+          `;
 
     const html = `
 <div id="profile-page">
@@ -91,7 +124,7 @@ function renderProfilePage(profile) {
 
         <div class="pf-identity">
             <h3 class="pf-name">${profile.full_name || '—'}</h3>
-            <p class="pf-usn">${profile.usn || '—'} &nbsp;·&nbsp; ${profile.department || '—'}</p>
+            <p class="pf-usn">${profile.employee_id || profile.usn || '—'} &nbsp;·&nbsp; ${profile.department || '—'}</p>
             <span class="badge ${badgeClass}">${capitalize(profile.verification_status)}</span>
         </div>
 
@@ -118,12 +151,9 @@ function renderProfilePage(profile) {
             </div>
         </div>
         <div class="pf-card mb-4">
-            <div class="pf-section-title">Academic Information</div>
+            <div class="pf-section-title">${academicSectionTitle}</div>
             <div class="pf-field-grid">
-                ${viewField('USN',        profile.usn,        true)}
-                ${viewField('Department', profile.department, true)}
-                ${viewField('Semester',   profile.semester != null ? `Semester ${profile.semester}` : null)}
-                ${viewField('Section',    profile.section  ? `Section ${profile.section}` : null)}
+                ${viewAcademicFields}
             </div>
         </div>
     </div>
@@ -145,15 +175,9 @@ function renderProfilePage(profile) {
                 </div>
             </div>
             <div class="pf-card mb-4">
-                <div class="pf-section-title">Academic Information</div>
+                <div class="pf-section-title">${academicSectionTitle}</div>
                 <div class="pf-field-grid">
-                    ${editFieldReadOnly('usn',        'USN',        profile.usn)}
-                    ${editFieldReadOnly('department', 'Department', profile.department)}
-                    ${editField('semester', 'Semester', 'number',   profile.semester, 'min="1" max="8"')}
-                    ${editFieldSelect('section', 'Section',
-                        ['', 'A', 'B', 'C', 'D'],
-                        ['Select Section', 'A', 'B', 'C', 'D'],
-                        profile.section)}
+                    ${editAcademicFields}
                 </div>
             </div>
             <div class="d-flex gap-3 mt-2">
@@ -276,7 +300,7 @@ async function submitProfileUpdate(e) {
         const formData = new FormData();
 
         // Add non-empty, non-readonly text fields
-        const textFields = ['full_name', 'phone', 'semester', 'date_of_birth'];
+        const textFields = ['full_name', 'phone', 'semester', 'date_of_birth', 'employee_id', 'designation'];
         textFields.forEach(name => {
             const el = form.elements[name];
             if (el && el.value.trim() !== '') {
@@ -298,7 +322,12 @@ async function submitProfileUpdate(e) {
             formData.append('profile_photo', photoInput.files[0]);
         }
 
-        const response = await fetch(`${API_BASE_URL}/student/profile`, {
+        let updateEndpoint = `${API_BASE_URL}/student/profile`;
+        if (typeof currentRole !== 'undefined' && currentRole === 'teacher') {
+            updateEndpoint = `${API_BASE_URL}/teacher/profile`;
+        }
+
+        const response = await fetch(updateEndpoint, {
             method: 'PUT',
             headers: getAuthHeaders(),  // No Content-Type — FormData sets it automatically
             body: formData,
@@ -350,7 +379,14 @@ async function loadProfilePage() {
     }
 
     try {
-        const response = await fetch(`${API_BASE_URL}/student/profile`, {
+        let endpoint = `${API_BASE_URL}/student/profile`;
+        let roleKey = 'student';
+        if (typeof currentRole !== 'undefined' && currentRole === 'teacher') {
+            endpoint = `${API_BASE_URL}/teacher/me`;
+            roleKey = 'teacher';
+        }
+
+        const response = await fetch(endpoint, {
             headers: getAuthHeaders(),
         });
 
@@ -365,10 +401,15 @@ async function loadProfilePage() {
 
         const profile = await response.json();
 
+        if (roleKey === 'teacher') {
+            profile.usn = profile.employee_id || 'FACULTY';
+            profile.verification_status = profile.verification_status || 'approved';
+        }
+
         // Update localStorage with fresh data
-        const stored = JSON.parse(localStorage.getItem('student') || '{}');
+        const stored = JSON.parse(localStorage.getItem(roleKey) || '{}');
         const merged = { ...stored, ...profile };
-        localStorage.setItem('student', JSON.stringify(merged));
+        localStorage.setItem(roleKey, JSON.stringify(merged));
 
         renderProfilePage(profile);
     } catch (err) {
@@ -387,16 +428,19 @@ async function loadProfilePage() {
 /* ── Refresh dashboard header from API profile ───────────────────────────── */
 async function refreshDashboardFromAPI() {
     try {
-        const response = await fetch(`${API_BASE_URL}/student/profile`, {
+        let fetchEndpoint = `${API_BASE_URL}/student/profile`;
+        const roleKey = (typeof currentRole !== 'undefined' && currentRole === 'teacher') ? 'teacher' : 'student';
+        if (roleKey === 'teacher') {
+            fetchEndpoint = `${API_BASE_URL}/teacher/me`;
+        }
+        const response = await fetch(fetchEndpoint, {
             headers: getAuthHeaders(),
         });
         if (!response.ok) return;
         const profile = await response.json();
 
-        // Update localStorage
-        localStorage.setItem('student', JSON.stringify(profile));
+        localStorage.setItem(roleKey, JSON.stringify(profile));
 
-        // Re-render sidebar/topbar info using layout.js function
         if (typeof currentUser !== 'undefined') {
             currentUser = profile;
         }

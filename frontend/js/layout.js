@@ -55,16 +55,41 @@ let currentRole = null;
 let currentUser = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Determine role
-    if (localStorage.getItem('student')) {
-        currentRole = 'student';
-        currentUser = JSON.parse(localStorage.getItem('student'));
-    } else if (localStorage.getItem('teacher')) {
+    // 1. Determine role via JWT token or storage
+    const token = localStorage.getItem('access_token');
+    let tokenRole = null;
+    if (token) {
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            tokenRole = payload.role;
+        } catch (e) {}
+    }
+
+    const safeParse = (key) => {
+        try {
+            const val = localStorage.getItem(key);
+            return val ? JSON.parse(val) : null;
+        } catch (e) { return null; }
+    };
+
+    if (tokenRole === 'admin' && localStorage.getItem('admin')) {
+        currentRole = 'admin';
+        currentUser = safeParse('admin');
+    } else if (tokenRole === 'teacher' && localStorage.getItem('teacher')) {
         currentRole = 'teacher';
-        currentUser = JSON.parse(localStorage.getItem('teacher'));
+        currentUser = safeParse('teacher');
+    } else if (tokenRole === 'student' && localStorage.getItem('student')) {
+        currentRole = 'student';
+        currentUser = safeParse('student');
     } else if (localStorage.getItem('admin')) {
         currentRole = 'admin';
-        currentUser = JSON.parse(localStorage.getItem('admin'));
+        currentUser = safeParse('admin');
+    } else if (localStorage.getItem('teacher')) {
+        currentRole = 'teacher';
+        currentUser = safeParse('teacher');
+    } else if (localStorage.getItem('student')) {
+        currentRole = 'student';
+        currentUser = safeParse('student');
     } else {
         // Not logged in
         window.location.href = 'signin.html';
@@ -214,10 +239,23 @@ window.loadView = async function(viewId) {
 
 /** Executes javascript functions required for a specific view */
 function executeViewLogic(viewId) {
+    if (viewId === 'dashboard') {
+        const studentView = document.getElementById('student-dashboard-view');
+        const teacherView = document.getElementById('teacher-dashboard-view');
+        const adminView = document.getElementById('admin-dashboard-view');
+
+        if (studentView) studentView.classList.toggle('hidden', currentRole !== 'student');
+        if (teacherView) teacherView.classList.toggle('hidden', currentRole !== 'teacher');
+        if (adminView) adminView.classList.toggle('hidden', currentRole !== 'admin');
+    }
+
     if (currentRole === 'student') {
         if (viewId === 'dashboard') {
-            // Re-fetch student to ensure we have the latest
-            const student = JSON.parse(localStorage.getItem('student'));
+            let student = null;
+            try {
+                const sItem = localStorage.getItem('student');
+                if (sItem) student = JSON.parse(sItem);
+            } catch (e) {}
             if (typeof renderStudentInfo === 'function') renderStudentInfo(student);
             if (typeof renderTimetable === 'function') renderTimetable(student);
             if (typeof renderNotifications === 'function') renderNotifications();
@@ -241,6 +279,28 @@ function executeViewLogic(viewId) {
             if (typeof renderTeacherDashboard === 'function') renderTeacherDashboard();
         } else if (viewId === 'teacher_attendance') {
             if (typeof renderTeacherAttendance === 'function') renderTeacherAttendance();
+        } else if (viewId === 'profile') {
+            if (typeof loadProfilePage === 'function') loadProfilePage();
+        } else if (viewId === 'timetable') {
+            if (typeof loadTimetablePage === 'function') loadTimetablePage();
+        }
+    } else if (currentRole === 'admin') {
+        if (viewId === 'dashboard') {
+            if (typeof renderAdminDashboard === 'function') renderAdminDashboard();
+        } else if (viewId === 'students') {
+            if (typeof renderAdminStudents === 'function') renderAdminStudents();
+        } else if (viewId === 'teachers') {
+            if (typeof renderAdminTeachers === 'function') renderAdminTeachers();
+        } else if (viewId === 'departments') {
+            if (typeof renderAdminDepartments === 'function') renderAdminDepartments();
+        } else if (viewId === 'subjects') {
+            if (typeof renderAdminSubjects === 'function') renderAdminSubjects();
+        } else if (viewId === 'verification') {
+            if (typeof renderAdminVerification === 'function') renderAdminVerification();
+        } else if (viewId === 'audit') {
+            if (typeof renderAdminAudit === 'function') renderAdminAudit();
+        } else if (viewId === 'timetable') {
+            if (typeof loadTimetablePage === 'function') loadTimetablePage();
         }
     }
 
@@ -249,6 +309,7 @@ function executeViewLogic(viewId) {
     } else if (viewId === 'notifications') {
         if (typeof initNotificationsPage === 'function') initNotificationsPage();
     }
+
 
     if (typeof refreshNotificationBadge === 'function') {
         refreshNotificationBadge();

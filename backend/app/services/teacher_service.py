@@ -33,7 +33,8 @@ async def authenticate_teacher(
             detail="Invalid email or password.",
         )
 
-    if teacher.get("role") != "teacher":
+    teacher_role = teacher.get("role")
+    if teacher_role and teacher_role != "teacher":
         raise HTTPException(
             status_code=401,
             detail="Invalid email or password.",

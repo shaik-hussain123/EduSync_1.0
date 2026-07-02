@@ -17,14 +17,28 @@ function getStoredUser() {
     return null;
 }
 
-function renderTeacherDashboard() {
-    const teacher = getStoredUser();
+function setDashboardRoleVisibility(activeRole) {
     const studentView = document.getElementById('student-dashboard-view');
     const teacherView = document.getElementById('teacher-dashboard-view');
+    const adminView = document.getElementById('admin-dashboard-view');
 
-    if (studentView) studentView.classList.add('hidden');
-    if (teacherView) teacherView.classList.remove('hidden');
+    if (studentView) {
+        if (activeRole === 'student') studentView.classList.remove('hidden');
+        else studentView.classList.add('hidden');
+    }
+    if (teacherView) {
+        if (activeRole === 'teacher') teacherView.classList.remove('hidden');
+        else teacherView.classList.add('hidden');
+    }
+    if (adminView) {
+        if (activeRole === 'admin') adminView.classList.remove('hidden');
+        else adminView.classList.add('hidden');
+    }
+}
 
+async function renderTeacherDashboard() {
+    setDashboardRoleVisibility('teacher');
+    const teacher = getStoredUser();
     if (!teacher) return;
 
     const firstName = teacher.full_name ? teacher.full_name.split(' ')[0] : 'Teacher';
@@ -77,12 +91,27 @@ function renderTeacherDashboard() {
 
     const notifBody = document.getElementById('teacher-notifications-body');
     if (notifBody) {
-        notifBody.innerHTML = notifications.map(item => `
-            <div style="padding: 10px 0; border-bottom: 1px solid #eef2f7;">
-                <div style="font-weight: 600; margin-bottom: 3px;">${item.title}</div>
-                <div style="font-size: 12px; color: #666;">${item.message}</div>
-            </div>
-        `).join('');
+        try {
+            const response = await fetch(`${API_BASE_URL}/notifications`, {
+                headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                const items = (data.notifications || []).slice(0, 5);
+                if (items.length) {
+                    notifBody.innerHTML = items.map(item => `
+                        <div style="padding: 10px 0; border-bottom: 1px solid #eef2f7;">
+                            <div style="font-weight: 600; margin-bottom: 3px;">${item.title}</div>
+                            <div style="font-size: 12px; color: #666;">${item.message}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    notifBody.innerHTML = emptyState('🔔', 'No new notifications yet.');
+                }
+            }
+        } catch (_) {
+            notifBody.innerHTML = emptyState('🔔', 'No new notifications yet.');
+        }
     }
 }
 
@@ -100,10 +129,7 @@ function calcProfileCompletion(student) {
 function renderStudentInfo(student) {
     if (!student) return;
 
-    const studentView = document.getElementById('student-dashboard-view');
-    const teacherView = document.getElementById('teacher-dashboard-view');
-    if (studentView) studentView.classList.remove('hidden');
-    if (teacherView) teacherView.classList.add('hidden');
+    setDashboardRoleVisibility('student');
 
     const firstName = student.full_name ? student.full_name.split(' ')[0] : 'Student';
 
@@ -261,7 +287,7 @@ async function renderNotifications() {
     if (!el) return;
 
     try {
-        const response = await fetch(`${API_BASE_URL}/student/notifications`, {
+        const response = await fetch(`${API_BASE_URL}/notifications`, {
             headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` }
         });
 

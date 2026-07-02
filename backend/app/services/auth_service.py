@@ -66,7 +66,8 @@ async def login_student(
         )
 
     # ── 3. Role guard — this endpoint is strictly for students
-    if student.get("role") != "student":
+    student_role = student.get("role")
+    if student_role and student_role != "student":
         raise HTTPException(
             status_code=401,
             detail="Invalid email or password.",

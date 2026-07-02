@@ -1,4 +1,4 @@
-<div id="student-dashboard-view">
+<div id="student-dashboard-view" class="hidden">
     <!-- Profile completion banner -->
     <div class="profile-banner hidden" id="profile-banner" role="alert">
         <div class="profile-banner-text">
@@ -266,3 +266,96 @@
         </div>
     </div>
 </div>
+
+<div id="admin-dashboard-view" class="hidden">
+    <div class="welcome-row">
+        <h1>Hello, <span id="admin-welcome-name">Admin</span>. 🛡️</h1>
+        <p class="welcome-sub">System control panel overview.</p>
+    </div>
+
+    <!-- Admin statistic cards -->
+    <div class="info-grid">
+
+        <div class="info-card">
+            <div class="ic-label">Total Students</div>
+            <div class="ic-value" id="admin-stat-students">—</div>
+        </div>
+
+        <div class="info-card">
+            <div class="ic-label">Total Faculty</div>
+            <div class="ic-value" id="admin-stat-teachers">—</div>
+        </div>
+
+        <div class="info-card">
+            <div class="ic-label">Active Departments</div>
+            <div class="ic-value" id="admin-stat-depts">—</div>
+        </div>
+
+        <div class="info-card">
+            <div class="ic-label">Awaiting Verification</div>
+            <span class="badge badge-pending" id="admin-stat-pending" style="font-size:16px; padding: 6px 12px; margin-top: 5px;">—</span>
+        </div>
+
+    </div>
+
+    <!-- Quick Actions -->
+    <h2 class="section-title">Quick Actions</h2>
+    <div class="quick-grid">
+
+        <div class="quick-card" onclick="loadView('verification')">
+            <div class="quick-icon qi-accent">🛡️</div>
+            <h4>Verify Registrations</h4>
+            <p>Approve or reject pending student accounts.</p>
+        </div>
+
+        <div class="quick-card" onclick="loadView('teachers')">
+            <div class="quick-icon qi-navy">👨‍🏫</div>
+            <h4>Manage Faculty</h4>
+            <p>Add new teacher profiles or assign active courses.</p>
+        </div>
+
+        <div class="quick-card" onclick="loadView('subjects')">
+            <div class="quick-icon qi-green">📚</div>
+            <h4>Manage Course Syllabus</h4>
+            <p>Configure semesters, subjects, and curriculum details.</p>
+        </div>
+
+        <div class="quick-card" onclick="loadView('audit')">
+            <div class="quick-icon qi-amber">📋</div>
+            <h4>System Audit Logs</h4>
+            <p>Review full security logs and administration audits.</p>
+        </div>
+
+    </div>
+
+    <div class="widget-grid">
+        <!-- Pending Approvals Widget -->
+        <div class="widget">
+            <div class="widget-header">
+                <h3 class="widget-title">⏳ Pending Verifications</h3>
+                <span class="widget-action" onclick="loadView('verification')">View All →</span>
+            </div>
+            <div id="admin-widget-verification-body">
+                <div class="empty-state">
+                    <div class="empty-icon">⏳</div>
+                    <div class="empty-msg">Loading pending verifications...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Audit Logs -->
+        <div class="widget">
+            <div class="widget-header">
+                <h3 class="widget-title">📋 Recent System Events</h3>
+                <span class="widget-action" onclick="loadView('audit')">View Logs →</span>
+            </div>
+            <div id="admin-widget-audit-body">
+                <div class="empty-state">
+                    <div class="empty-icon">📋</div>
+                    <div class="empty-msg">Loading audit logs...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

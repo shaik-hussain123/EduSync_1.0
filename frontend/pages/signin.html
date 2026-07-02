@@ -50,6 +50,9 @@
                     <button id="tab-teacher" class="tab-btn" onclick="switchTab('teacher')">
                         📖 Teacher
                     </button>
+                    <button id="tab-admin" class="tab-btn" onclick="switchTab('admin')">
+                        🛡️ Admin
+                    </button>
                 </div>
 
                 <!-- STUDENT LOGIN -->
@@ -116,6 +119,38 @@
 
                 </form>
 
+                <!-- ADMIN LOGIN -->
+                <form id="form-admin" class="tab-form hidden" onsubmit="loginStudent(event, 'admin')">
+
+                    <label for="a-email">Email</label>
+                    <input id="a-email" type="email" placeholder="admin@college.edu" required>
+
+                    <label for="a-pass">Password</label>
+                    <div class="password-wrap">
+                        <input id="a-pass" type="password" placeholder="••••••••" required>
+                        <button type="button" class="toggle-pass" onclick="togglePass('a-pass', this)"
+                            aria-label="Show password">
+                            👁
+                        </button>
+                    </div>
+
+                    <div class="form-footer-row">
+                        <label class="remember-label">
+                            <input type="checkbox" id="a-remember"> Remember me
+                        </label>
+                        <a href="#" class="forgot-link">Forgot password?</a>
+                    </div>
+
+                    <button class="create-btn" type="submit" id="a-submit-btn">
+                        Sign In as Admin
+                    </button>
+
+                    <div id="a-error" class="error-msg hidden">
+                        Invalid credentials. Please try again.
+                    </div>
+
+                </form>
+
                 <p class="signin-link">
                     New here? <a href="createAccount.html">Create an account</a>
                 </p>
@@ -129,13 +164,14 @@
     <script src="../js/auth.js"></script>
     <script>
         /* ── Live clear on input ── */
-        ['s-email','s-pass','t-email','t-pass'].forEach(id => {
+        ['s-email','s-pass','t-email','t-pass','a-email','a-pass'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.addEventListener('input', () => {
                 if (typeof clearFieldError === 'function') clearFieldError(id);
             });
         });
     </script>
+
 </body>
 
 </html>

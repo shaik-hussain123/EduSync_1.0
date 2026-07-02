@@ -2,20 +2,36 @@
 let fullTimetable = [];
 
 async function loadTimetablePage() {
+    const btn = document.getElementById('btn-add-timetable');
+    if (btn && (typeof currentRole !== 'undefined') && (currentRole === 'admin' || currentRole === 'teacher')) {
+        btn.classList.remove('hidden');
+    }
     await fetchTodayTimetable();
     await fetchWeeklyTimetable();
 }
 
 async function fetchTodayTimetable() {
     try {
-        const response = await fetch(`${API_BASE_URL}/student/timetable/today`, {
+        let endpoint = `${API_BASE_URL}/student/timetable/today`;
+        if (typeof currentRole !== 'undefined' && (currentRole === 'admin' || currentRole === 'teacher')) {
+            endpoint = `${API_BASE_URL}/${currentRole}/timetable?department=CSE&semester=5&section=A`;
+        }
+        const response = await fetch(endpoint, {
             headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` }
         });
         if (response.ok) {
             const data = await response.json();
-            const todaySchedule = data.today || { day_of_week: "Today", periods: [] };
-            document.getElementById('tt-today-title').textContent = `${todaySchedule.day_of_week}'s Schedule`;
-            renderPeriodsList('tt-today-container', todaySchedule.periods);
+            if (data.today) {
+                const todaySchedule = data.today;
+                document.getElementById('tt-today-title').textContent = `${todaySchedule.day_of_week}'s Schedule`;
+                renderPeriodsList('tt-today-container', todaySchedule.periods);
+            } else if (data.timetables) {
+                const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                const todayStr = days[new Date().getDay()];
+                const dayMatch = data.timetables.find(t => t.day_of_week === todayStr);
+                document.getElementById('tt-today-title').textContent = `${todayStr}'s Schedule`;
+                renderPeriodsList('tt-today-container', dayMatch ? dayMatch.periods : []);
+            }
         }
     } catch (err) {
         console.error(err);
@@ -25,25 +41,75 @@ async function fetchTodayTimetable() {
 
 async function fetchWeeklyTimetable() {
     try {
-        const response = await fetch(`${API_BASE_URL}/student/timetable`, {
+        let endpoint = `${API_BASE_URL}/student/timetable`;
+        if (typeof currentRole !== 'undefined' && (currentRole === 'admin' || currentRole === 'teacher')) {
+            endpoint = `${API_BASE_URL}/${currentRole}/timetable?department=CSE&semester=5&section=A`;
+        }
+        const response = await fetch(endpoint, {
             headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` }
         });
         if (response.ok) {
             const data = await response.json();
             fullTimetable = data.timetables || [];
             
-            // Set select to today if available
             const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
             const todayStr = days[new Date().getDay()];
             const selectEl = document.getElementById('tt-day-select');
             
-            if(todayStr !== "Sunday") {
+            if (selectEl && todayStr !== "Sunday") {
                 selectEl.value = todayStr;
             }
-            renderWeeklyDay(selectEl.value);
+            if (selectEl) renderWeeklyDay(selectEl.value);
         }
     } catch (err) {
         console.error(err);
+    }
+}
+
+function openAddTimetableModal() {
+    const modalEl = document.getElementById('addTimetableModal');
+    if (!modalEl) return;
+    const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+    modal.show();
+}
+
+async function submitTimetableForm(e) {
+    e.preventDefault();
+    const payload = {
+        department: document.getElementById('tt-modal-dept').value.trim(),
+        semester: parseInt(document.getElementById('tt-modal-sem').value),
+        section: document.getElementById('tt-modal-sec').value.trim().toUpperCase(),
+        day_of_week: document.getElementById('tt-modal-day').value,
+        period_no: parseInt(document.getElementById('tt-modal-period-no').value),
+        start_time: document.getElementById('tt-modal-start').value,
+        end_time: document.getElementById('tt-modal-end').value,
+        subject_id: document.getElementById('tt-modal-subject').value.trim(),
+        room: document.getElementById('tt-modal-room').value.trim()
+    };
+
+    try {
+        const roleEndpoint = (typeof currentRole !== 'undefined' && currentRole === 'admin') ? 'admin' : 'teacher';
+        const response = await fetch(`${API_BASE_URL}/${roleEndpoint}/timetable/upsert`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            },
+            body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+        if (response.ok) {
+            alert(data.message || 'Timetable period updated successfully!');
+            const modalEl = document.getElementById('addTimetableModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+            await loadTimetablePage();
+        } else {
+            alert(`Error: ${data.detail || 'Failed to update timetable'}`);
+        }
+    } catch (err) {
+        console.error("Failed to submit timetable", err);
+        alert("Network error updating timetable.");
     }
 }
 

@@ -3,7 +3,7 @@
  * EduSync — Smart Campus ERP | Student Notifications Module
  */
 
-const NOTIFICATIONS_API_BASE = `${API_BASE_URL}/student/notifications`;
+const NOTIFICATIONS_API_BASE = `${API_BASE_URL}/notifications`;
 let currentNotificationFilter = 'all';
 let notificationState = [];
 

@@ -59,25 +59,30 @@ function updateHistoryTable(history) {
 }
 
 function startScanner() {
-    const student = JSON.parse(localStorage.getItem('student') || '{}');
-    if (!student.profile_completed) {
-        attAlert('danger', 'Please complete your profile before marking attendance.');
-        return;
-    }
-    if (!student.face_registered) {
-        attAlert('danger', 'Please complete face registration before marking attendance.');
+    if (typeof Html5QrcodeScanner === 'undefined') {
+        attAlert('danger', 'Loading scanner library... If camera fails, enter your session token manually below.');
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/html5-qrcode';
+        script.onload = () => startScanner();
+        document.head.appendChild(script);
         return;
     }
 
     document.getElementById('start-scan-wrapper').style.display = 'none';
     document.getElementById('scanner-wrapper').style.display = 'block';
 
-    html5QrcodeScanner = new Html5QrcodeScanner(
-        "reader",
-        { fps: 10, qrbox: {width: 250, height: 250} },
-        /* verbose= */ false
-    );
-    html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+    try {
+        html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader",
+            { fps: 10, qrbox: {width: 250, height: 250} },
+            /* verbose= */ false
+        );
+        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+    } catch (e) {
+        console.error("Camera init error:", e);
+        attAlert('danger', 'Camera access failed or unavailable. Enter session token manually below.');
+        stopScanner();
+    }
 }
 
 function stopScanner() {
@@ -87,14 +92,27 @@ function stopScanner() {
             document.getElementById('scanner-wrapper').style.display = 'none';
         }).catch(error => {
             console.error("Failed to clear html5QrcodeScanner. ", error);
+            document.getElementById('start-scan-wrapper').style.display = 'block';
+            document.getElementById('scanner-wrapper').style.display = 'none';
         });
+    } else {
+        document.getElementById('start-scan-wrapper').style.display = 'block';
+        document.getElementById('scanner-wrapper').style.display = 'none';
     }
 }
 
-async function onScanSuccess(decodedText, decodedResult) {
-    // Stop scanning immediately to prevent multiple API calls
-    stopScanner();
-    
+async function submitManualQR() {
+    const input = document.getElementById('manual-qr-code');
+    if (!input || !input.value.trim()) {
+        attAlert('danger', 'Please enter or paste a valid QR session token.');
+        return;
+    }
+    const token = input.value.trim();
+    await processQRToken(token);
+    input.value = '';
+}
+
+async function processQRToken(token) {
     try {
         const response = await fetch(`${API_BASE_URL}/student/attendance/scan`, {
             method: 'POST',
@@ -102,13 +120,13 @@ async function onScanSuccess(decodedText, decodedResult) {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}` 
             },
-            body: JSON.stringify({ qr_token: decodedText })
+            body: JSON.stringify({ qr_token: token })
         });
         
         const data = await response.json();
         
         if (response.ok) {
-            attAlert('success', 'Attendance marked successfully!');
+            attAlert('success', data.message || 'Attendance marked successfully!');
             await loadAttendancePage();
         } else {
             attAlert('danger', data.detail || 'Failed to mark attendance.');
@@ -117,6 +135,11 @@ async function onScanSuccess(decodedText, decodedResult) {
         console.error(err);
         attAlert('danger', 'Network error. Please try again.');
     }
+}
+
+async function onScanSuccess(decodedText, decodedResult) {
+    stopScanner();
+    await processQRToken(decodedText);
 }
 
 function onScanFailure(error) {

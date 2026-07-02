@@ -1,6 +1,6 @@
-"""Teacher authentication and attendance routes."""
-
-from fastapi import APIRouter, Body, Depends, status
+from typing import Optional
+from fastapi import APIRouter, Body, Depends, File, Form, UploadFile, status
+from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.core.database import get_database
 from app.core.security import create_access_token
@@ -78,6 +78,48 @@ async def teacher_me(current_teacher: dict = Depends(get_current_teacher)):
         is_active=current_teacher.get("is_active", True),
     )
 
+@router.put("/profile")
+@router.put("/me")
+async def update_teacher_profile(
+    full_name: Optional[str] = Form(None),
+    employee_id: Optional[str] = Form(None),
+    phone: Optional[str] = Form(None),
+    designation: Optional[str] = Form(None),
+    profile_photo: Optional[UploadFile] = File(None),
+    current_teacher: dict = Depends(get_current_teacher),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    updates = {}
+    if full_name: updates["full_name"] = full_name.strip()
+    if employee_id: updates["employee_id"] = employee_id.strip()
+    if phone: updates["phone"] = phone.strip()
+    if designation: updates["designation"] = designation.strip()
+    
+    if profile_photo:
+        from app.utils.file_handler import save_profile_photo
+        photo_path = await save_profile_photo(profile_photo)
+        updates["profile_photo"] = photo_path
+
+    if updates:
+        await db["teachers"].update_one(
+            {"_id": current_teacher["_id"]},
+            {"$set": updates}
+        )
+
+    updated_teacher = await db["teachers"].find_one({"_id": current_teacher["_id"]})
+    return {
+        "success": True,
+        "message": "Teacher profile updated successfully.",
+        "profile_completion_pct": 100,
+        "teacher": {
+            "id": str(updated_teacher["_id"]),
+            "full_name": updated_teacher.get("full_name"),
+            "email": updated_teacher.get("email"),
+            "department": updated_teacher.get("department"),
+            "phone": updated_teacher.get("phone"),
+            "profile_photo": updated_teacher.get("profile_photo")
+        }
+    }
 
 @router.post("/logout")
 async def teacher_logout():
@@ -122,3 +164,27 @@ async def teacher_live_attendance(current_teacher: dict = Depends(get_current_te
     db = get_database()
     records = await get_live_attendance(str(current_teacher["_id"]), db)
     return {"records": records}
+
+@router.post("/timetable/upsert")
+async def teacher_upsert_timetable(
+    payload: dict,
+    current_teacher: dict = Depends(get_current_teacher),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Allow teacher to add or edit a class period in the timetable."""
+    from app.services.timetable_service import upsert_timetable_class
+    payload["faculty_id"] = str(current_teacher["_id"])
+    return await upsert_timetable_class(payload, db)
+
+@router.get("/timetable")
+async def teacher_get_timetable(
+    department: str,
+    semester: int,
+    section: str,
+    current_teacher: dict = Depends(get_current_teacher),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Fetch timetable for teacher view."""
+    from app.services.timetable_service import get_timetable_by_class
+    timetables = await get_timetable_by_class(department, semester, section, db)
+    return {"success": True, "timetables": timetables}

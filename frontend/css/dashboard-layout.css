@@ -1,4 +1,4 @@
-﻿/*
+/*
   frontend/css/dashboard.css
   EduSync — Smart Campus ERP | Student Dashboard Stylesheet
   Preserves existing color tokens: #072550 navy, #12233f dark, #b44331 terracotta, #f7f5f2 bg
@@ -30,6 +30,9 @@ body {
   color: var(--dark);
   overflow-x: hidden;
 }
+
+/* ── Utility Classes ── */
+.hidden { display: none !important; }
 
 a { text-decoration: none; color: inherit; }
 button { font-family: 'Inter', sans-serif; cursor: pointer; }

@@ -30,6 +30,7 @@ from app.api.admin.router import router as admin_router
 from app.api.attendance.router import router as attendance_router
 from app.api.face.router import router as face_router
 from app.api.notifications.router import router as notifications_router
+from app.api.settings.router import router as settings_router
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Logging
@@ -85,6 +86,22 @@ async def seed_demo_accounts(db):
             "updated_at": __import__("datetime").datetime.utcnow(),
         })
         logger.info("Seeded demo teacher account")
+
+    admin_collection = db["admins"]
+    admin_exists = await admin_collection.find_one({"email": "admin@example.com"})
+    if not admin_exists:
+        await admin_collection.insert_one({
+            "full_name": "System Administrator",
+            "email": "admin@example.com",
+            "password_hash": hash_password("password"),
+            "role": "admin",
+            "is_active": True,
+            "account_status": "active",
+            "created_at": __import__("datetime").datetime.utcnow(),
+            "updated_at": __import__("datetime").datetime.utcnow(),
+        })
+        logger.info("Seeded demo admin account")
+
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -145,8 +162,7 @@ app = FastAPI(
 # ──────────────────────────────────────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
-    allow_credentials=True,
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -166,6 +182,7 @@ for module_router in [
     attendance_router,
     face_router,
     notifications_router,
+    settings_router,
 ]:
     app.include_router(module_router, prefix=API_V1_PREFIX)
 
@@ -181,6 +198,24 @@ async def root():
         "message": f"Welcome to {settings.PROJECT_NAME} API",
         "version": settings.API_VERSION,
     }
+
+
+@app.post("/login", tags=["Root"])
+async def root_login(payload: dict):
+    from fastapi import HTTPException
+    from app.api.auth.router import unified_login, UnifiedLoginRequest
+    role = payload.get("role")
+    email = payload.get("email")
+    password = payload.get("password")
+    if not role or not email or not password:
+        raise HTTPException(status_code=400, detail="Missing role, email, or password")
+    
+    try:
+        req = UnifiedLoginRequest(role=role, email=email, password=password)
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    return await unified_login(req)
+
 
 
 @app.get("/health", tags=["Health"])

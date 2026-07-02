@@ -40,9 +40,25 @@ NotificationType = Literal[
 
 
 def _serialize_notification(doc: dict) -> NotificationItem:
+    nid = doc.get("notification_id") or str(doc.get("_id", ""))
+    uid = doc.get("user_id") or ""
+    created_at = doc.get("created_at")
+    if isinstance(created_at, datetime):
+        created_at_str = created_at.isoformat()
+    else:
+        created_at_str = str(created_at or "")
+
+    read_at = doc.get("read_at")
+    if isinstance(read_at, datetime):
+        read_at_str = read_at.isoformat()
+    elif read_at:
+        read_at_str = str(read_at)
+    else:
+        read_at_str = None
+
     return NotificationItem(
-        notification_id=str(doc["notification_id"]),
-        user_id=str(doc["user_id"]),
+        notification_id=str(nid),
+        user_id=str(uid),
         role=doc.get("role", "student"),
         title=doc.get("title", ""),
         message=doc.get("message", ""),
@@ -50,8 +66,8 @@ def _serialize_notification(doc: dict) -> NotificationItem:
         priority=doc.get("priority", "Normal"),
         is_read=bool(doc.get("is_read", False)),
         action_url=doc.get("action_url"),
-        created_at=doc.get("created_at").isoformat() if isinstance(doc.get("created_at"), datetime) else str(doc.get("created_at", "")),
-        read_at=(doc.get("read_at").isoformat() if isinstance(doc.get("read_at"), datetime) else str(doc.get("read_at"))) if doc.get("read_at") else None,
+        created_at=created_at_str,
+        read_at=read_at_str,
     )
 
 
@@ -101,6 +117,23 @@ async def list_notifications_for_user(
     if limit:
         cursor = cursor.limit(limit)
     docs = await cursor.to_list(length=100)
+
+    if not docs and include_read:
+        # Seed initial default notifications for fresh users
+        if role == "teacher":
+            await create_notification(db, user_id=user_id, role=role, title="Attendance reminder", message="2 classes still need session confirmation.", notification_type="Attendance Marked", priority="High")
+            await create_notification(db, user_id=user_id, role=role, title="Profile update", message="Keep your department and subjects current.", notification_type="Profile Reminder", priority="Normal")
+        elif role == "student":
+            await create_notification(db, user_id=user_id, role=role, title="Welcome to EduSync", message="Your student portal is active.", notification_type="General Announcement", priority="Normal")
+            await create_notification(db, user_id=user_id, role=role, title="Profile Reminder", message="Please complete your student profile and upload a photo.", notification_type="Profile Reminder", priority="High")
+        elif role == "admin":
+            await create_notification(db, user_id=user_id, role=role, title="System Overview", message="Admin control panel initialized.", notification_type="General Announcement", priority="Normal")
+        
+        cursor = collection.find(query).sort("created_at", -1)
+        if limit:
+            cursor = cursor.limit(limit)
+        docs = await cursor.to_list(length=100)
+
     return [_serialize_notification(doc) for doc in docs]
 
 

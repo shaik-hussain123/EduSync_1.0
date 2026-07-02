@@ -3,7 +3,7 @@
  * EduSync — Smart Campus ERP | Student Settings Module
  */
 
-const SETTINGS_API_BASE = `${API_BASE_URL}/student/settings`;
+const SETTINGS_API_BASE = `${API_BASE_URL}/settings`;
 
 function getSettingsHeaders() {
     return {
@@ -118,7 +118,7 @@ async function changePassword() {
             confirm_password: document.getElementById('settings-confirm-password').value,
         };
 
-        const response = await fetch(`${API_BASE_URL}/student/change-password`, {
+        const response = await fetch(`${API_BASE_URL}/settings/change-password`, {
             method: 'PUT',
             headers: getSettingsHeaders(),
             body: JSON.stringify(payload)

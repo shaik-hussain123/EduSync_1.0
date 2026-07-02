@@ -91,6 +91,11 @@ async function loginStudent(e, role) {
         await loginTeacher(e);
         return;
     }
+    
+    if (role === 'admin') {
+        await loginAdmin(e);
+        return;
+    }
 
     const btn = document.getElementById("s-submit-btn");
     const originalText = btn.textContent;
@@ -116,6 +121,8 @@ async function loginStudent(e, role) {
         if (response.ok) {
             localStorage.setItem("access_token", data.access_token);
             localStorage.setItem("token_type", data.token_type);
+            localStorage.removeItem("teacher");
+            localStorage.removeItem("admin");
             localStorage.setItem("student", JSON.stringify(data.student));
             
             setTimeout(() => {
@@ -166,8 +173,59 @@ async function loginTeacher(e) {
         if (response.ok) {
             localStorage.setItem("access_token", data.access_token);
             localStorage.setItem("token_type", data.token_type);
-            // Store under 'teacher' key so layout.js detects the role
+            localStorage.removeItem("student");
+            localStorage.removeItem("admin");
             localStorage.setItem("teacher", JSON.stringify(data.teacher));
+
+            setTimeout(() => {
+                window.location.href = "dashboard.html";
+            }, 500);
+        } else {
+            if (errEl) {
+                errEl.textContent = data.detail || "Invalid credentials. Please try again.";
+                errEl.classList.remove("hidden");
+            } else {
+                alert(data.detail || "Invalid credentials.");
+            }
+            if (btn) { btn.textContent = originalText; btn.disabled = false; }
+        }
+    } catch (error) {
+        if (errEl) {
+            errEl.textContent = "Network error: Could not connect to the server.";
+            errEl.classList.remove("hidden");
+        } else {
+            alert("Network error: Could not connect to the server.");
+        }
+        console.error(error);
+        if (btn) { btn.textContent = originalText; btn.disabled = false; }
+    }
+}
+
+async function loginAdmin(e) {
+    const btn = document.getElementById("a-submit-btn");
+    const originalText = btn ? btn.textContent : 'Sign In as Admin';
+    if (btn) { btn.textContent = "Signing in..."; btn.disabled = true; }
+    const errEl = document.getElementById("a-error");
+    if (errEl) errEl.classList.add("hidden");
+
+    try {
+        const email = document.getElementById("a-email").value.trim();
+        const password = document.getElementById("a-pass").value;
+
+        const response = await fetch(`${API_BASE_URL}/admin/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            localStorage.setItem("access_token", data.access_token);
+            localStorage.setItem("token_type", data.token_type);
+            localStorage.removeItem("student");
+            localStorage.removeItem("teacher");
+            localStorage.setItem("admin", JSON.stringify(data.admin));
 
             setTimeout(() => {
                 window.location.href = "dashboard.html";
@@ -196,13 +254,17 @@ async function loginTeacher(e) {
 function switchTab(role) {
     const tabStudent = document.getElementById('tab-student');
     const tabTeacher = document.getElementById('tab-teacher');
+    const tabAdmin = document.getElementById('tab-admin');
     if (tabStudent) tabStudent.classList.toggle('active', role === 'student');
     if (tabTeacher) tabTeacher.classList.toggle('active', role === 'teacher');
+    if (tabAdmin) tabAdmin.classList.toggle('active', role === 'admin');
 
     const formStudent = document.getElementById('form-student');
     const formTeacher = document.getElementById('form-teacher');
+    const formAdmin = document.getElementById('form-admin');
     if (formStudent) formStudent.classList.toggle('hidden', role !== 'student');
     if (formTeacher) formTeacher.classList.toggle('hidden', role !== 'teacher');
+    if (formAdmin) formAdmin.classList.toggle('hidden', role !== 'admin');
     
     // Dynamic text for Sign In left panel
     const heroTitle = document.getElementById('hero-title');
@@ -211,9 +273,12 @@ function switchTab(role) {
         if (role === 'student') {
             heroTitle.innerHTML = 'Welcome back.';
             heroSubtitle.innerHTML = 'Your classroom is waiting.<br>Sign in to access your personalised dashboard.';
-        } else {
+        } else if (role === 'teacher') {
             heroTitle.innerHTML = 'Welcome back.';
             heroSubtitle.innerHTML = 'Manage attendance, classes and reports.<br>Sign in to access your dashboard.';
+        } else {
+            heroTitle.innerHTML = 'Control Center.';
+            heroSubtitle.innerHTML = 'Manage departments, verification, subjects and system logs.<br>Sign in to access your admin portal.';
         }
     }
     
@@ -221,8 +286,10 @@ function switchTab(role) {
     if (typeof clearErrors === 'function') {
         clearErrors('s');
         clearErrors('t');
+        clearErrors('a');
     }
 }
+
 
 function registerTeacher(e) {
     e.preventDefault();

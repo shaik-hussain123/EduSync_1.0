@@ -11,6 +11,7 @@ from typing import Any
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError
+from bson import ObjectId
 
 from app.core.database import get_database
 from app.core.security import decode_access_token
@@ -64,7 +65,8 @@ async def _get_current_user(
             detail=f"{expected_role.title()} account not found.",
         )
 
-    if doc.get("role") != expected_role:
+    doc_role = doc.get("role")
+    if doc_role and doc_role != expected_role:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Invalid account role.",
@@ -111,3 +113,69 @@ async def get_current_teacher(
         collection_name="teachers",
         id_claim="teacher_id",
     )
+
+
+async def get_current_admin(
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+) -> dict[str, Any]:
+    return await _get_current_user(
+        credentials,
+        expected_role="admin",
+        collection_name="admins",
+        id_claim="admin_id",
+    )
+
+
+async def get_current_user_any(
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+) -> dict[str, Any]:
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Invalid or expired authentication token.",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    try:
+        payload = decode_access_token(credentials.credentials)
+    except JWTError:
+        raise credentials_exception
+
+    role = payload.get("role")
+    if not role:
+        raise credentials_exception
+
+    db = get_database()
+    
+    if role == "student":
+        user_id = payload.get("student_id")
+        collection_name = "students"
+    elif role == "teacher":
+        user_id = payload.get("teacher_id")
+        collection_name = "teachers"
+    elif role == "admin":
+        user_id = payload.get("admin_id")
+        collection_name = "admins"
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid account role.",
+        )
+
+    if not user_id:
+        raise credentials_exception
+
+    try:
+        doc = await db[collection_name].find_one({"_id": ObjectId(user_id)})
+    except Exception:
+        raise credentials_exception
+
+    if doc is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Account not found.",
+        )
+
+    doc["role"] = role
+    return doc
+
+
