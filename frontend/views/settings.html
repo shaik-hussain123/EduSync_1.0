@@ -1,0 +1,158 @@
+<div class="settings-page">
+    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+        <div>
+            <h2 class="pf-heading">Settings</h2>
+            <p class="pf-sub">Manage your account, preferences, and notification choices</p>
+        </div>
+    </div>
+
+    <div id="settings-alert" class="alert" style="display:none;" role="alert"></div>
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="pf-card mb-4">
+                <div class="pf-section-title">Account Information</div>
+                <div class="pf-field-grid">
+                    <div class="pf-field">
+                        <div class="pf-field-label">Full Name</div>
+                        <div class="pf-field-value" id="acc-full-name">—</div>
+                    </div>
+                    <div class="pf-field">
+                        <div class="pf-field-label">USN</div>
+                        <div class="pf-field-value" id="acc-usn">—</div>
+                    </div>
+                    <div class="pf-field">
+                        <div class="pf-field-label">Email</div>
+                        <div class="pf-field-value" id="acc-email">—</div>
+                    </div>
+                    <div class="pf-field">
+                        <div class="pf-field-label">Department</div>
+                        <div class="pf-field-value" id="acc-department">—</div>
+                    </div>
+                    <div class="pf-field">
+                        <div class="pf-field-label">Semester</div>
+                        <div class="pf-field-value" id="acc-semester">—</div>
+                    </div>
+                    <div class="pf-field">
+                        <div class="pf-field-label">Section</div>
+                        <div class="pf-field-value" id="acc-section">—</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="pf-card mb-4">
+                <div class="pf-section-title">Profile Information</div>
+                <div class="pf-field-grid">
+                    <div class="pf-field">
+                        <label class="pf-field-label" for="settings-full-name">Full Name</label>
+                        <input id="settings-full-name" class="pf-input" type="text">
+                    </div>
+                    <div class="pf-field">
+                        <label class="pf-field-label" for="settings-phone">Phone Number</label>
+                        <input id="settings-phone" class="pf-input" type="tel">
+                    </div>
+                    <div class="pf-field">
+                        <label class="pf-field-label" for="settings-gender">Gender</label>
+                        <select id="settings-gender" class="pf-input">
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                    <div class="pf-field">
+                        <label class="pf-field-label" for="settings-dob">Date of Birth</label>
+                        <input id="settings-dob" class="pf-input" type="date">
+                    </div>
+                </div>
+            </div>
+
+            <div class="pf-card mb-4">
+                <div class="pf-section-title">Change Password</div>
+                <div class="pf-field-grid">
+                    <div class="pf-field">
+                        <label class="pf-field-label" for="settings-current-password">Current Password</label>
+                        <input id="settings-current-password" class="pf-input" type="password">
+                    </div>
+                    <div class="pf-field">
+                        <label class="pf-field-label" for="settings-new-password">New Password</label>
+                        <input id="settings-new-password" class="pf-input" type="password">
+                    </div>
+                    <div class="pf-field">
+                        <label class="pf-field-label" for="settings-confirm-password">Confirm Password</label>
+                        <input id="settings-confirm-password" class="pf-input" type="password">
+                    </div>
+                </div>
+                <button class="btn-primary-erp mt-3" id="btn-change-password" type="button">Change Password</button>
+            </div>
+
+            <div class="pf-card mb-4">
+                <div class="pf-section-title">Appearance & Preferences</div>
+                <div class="pf-field-grid">
+                    <div class="pf-field">
+                        <label class="pf-field-label" for="settings-theme">Theme</label>
+                        <select id="settings-theme" class="pf-input">
+                            <option value="light">Light Theme</option>
+                            <option value="dark">Dark Theme</option>
+                        </select>
+                    </div>
+                    <div class="pf-field">
+                        <label class="pf-field-label" for="settings-language">Language</label>
+                        <select id="settings-language" class="pf-input">
+                            <option value="English">English</option>
+                            <option value="Kannada">Kannada</option>
+                        </select>
+                    </div>
+                    <div class="pf-field">
+                        <label class="pf-field-label" for="settings-date-format">Date Format</label>
+                        <select id="settings-date-format" class="pf-input">
+                            <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                            <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                        </select>
+                    </div>
+                    <div class="pf-field">
+                        <label class="pf-field-label" for="settings-time-format">Time Format</label>
+                        <select id="settings-time-format" class="pf-input">
+                            <option value="24h">24h</option>
+                            <option value="12h">12h</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pf-card mb-4">
+                <div class="pf-section-title">Notification Preferences</div>
+                <div class="settings-switch-list">
+                    <label class="settings-switch-row"><span>Attendance Notifications</span><input type="checkbox" id="notif-attendance"></label>
+                    <label class="settings-switch-row"><span>Leave Notifications</span><input type="checkbox" id="notif-leave"></label>
+                    <label class="settings-switch-row"><span>Timetable Notifications</span><input type="checkbox" id="notif-timetable"></label>
+                    <label class="settings-switch-row"><span>General Announcements</span><input type="checkbox" id="notif-general"></label>
+                </div>
+            </div>
+
+            <div class="pf-card mb-4">
+                <div class="pf-section-title">Session Information</div>
+                <div class="pf-field-grid">
+                    <div class="pf-field">
+                        <div class="pf-field-label">Login Time</div>
+                        <div class="pf-field-value" id="session-login-time">—</div>
+                    </div>
+                    <div class="pf-field">
+                        <div class="pf-field-label">Browser</div>
+                        <div class="pf-field-value" id="session-browser">—</div>
+                    </div>
+                    <div class="pf-field">
+                        <div class="pf-field-label">JWT Expiry</div>
+                        <div class="pf-field-value" id="session-jwt-expiry">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-3 flex-wrap">
+                <button class="btn-primary-erp" id="btn-save-settings" type="button">Save Settings</button>
+                <button class="btn-secondary-erp" id="btn-logout" type="button">Logout</button>
+            </div>
+        </div>
+    </div>
+</div>

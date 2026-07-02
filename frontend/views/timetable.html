@@ -1,0 +1,52 @@
+<div id="timetable-view">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Timetable</h2>
+            <p class="text-muted">View your daily classes and weekly schedule.</p>
+        </div>
+    </div>
+
+    <!-- Alert Box -->
+    <div class="alert" id="tt-alert" style="display:none;" role="alert"></div>
+
+    <ul class="nav nav-tabs mb-4" id="timetableTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="today-tab" data-bs-toggle="tab" data-bs-target="#today-tt" type="button" role="tab">Today's Classes</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="weekly-tab" data-bs-toggle="tab" data-bs-target="#weekly-tt" type="button" role="tab">Weekly Timetable</button>
+        </li>
+    </ul>
+    
+    <div class="tab-content" id="timetableTabsContent">
+        <!-- Today Tab -->
+        <div class="tab-pane fade show active" id="today-tt" role="tabpanel">
+            <div class="tt-card">
+                <h4 id="tt-today-title">Today's Schedule</h4>
+                <div id="tt-today-container" class="mt-4">
+                    <div class="text-center text-muted p-4">Loading today's classes...</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Weekly Tab -->
+        <div class="tab-pane fade" id="weekly-tt" role="tabpanel">
+            <div class="tt-card">
+                <div class="mb-3">
+                    <label>Select Day</label>
+                    <select class="form-select w-25" id="tt-day-select" onchange="renderWeeklyDay(this.value)">
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                    </select>
+                </div>
+                <div id="tt-weekly-container" class="mt-4">
+                    <div class="text-center text-muted p-4">Loading weekly schedule...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

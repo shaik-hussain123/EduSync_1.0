@@ -1,0 +1,217 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f8f7f4;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+/* LEFT */
+
+.left-panel {
+    flex: 1;
+    background: #072550;
+    color: white;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-icon {
+    width: 42px;
+    height: 42px;
+    background: white;
+    color: #072550;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+}
+
+.logo h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px;
+}
+
+.hero-content {
+    margin-bottom: 120px;
+}
+
+.hero-content h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 60px;
+    margin-bottom: 15px;
+}
+
+.hero-content p {
+    max-width: 400px;
+    line-height: 1.8;
+}
+
+/* RIGHT */
+
+.right-panel {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-container {
+    width: 500px;
+}
+
+.form-container h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 45px;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    margin-bottom: 25px;
+    color: #666;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+/* ── Select dropdowns ── */
+
+.select-field {
+    width: 100%;
+    padding: 12px 36px 12px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #333;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.select-field:focus {
+    outline: none;
+    border-color: #072550;
+    box-shadow: 0 0 0 3px rgba(7, 37, 80, 0.08);
+}
+
+.select-field option[value=""][disabled] {
+    color: #aaa;
+}
+
+.row {
+    display: flex;
+    gap: 15px;
+}
+
+.row div {
+    flex: 1;
+}
+
+/* ── TABS ── */
+
+.tab-bar {
+    display: flex;
+    gap: 0;
+    margin-bottom: 24px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1.5px solid #e0dcd6;
+    background: #f0ede8;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 13px 20px;
+    border: none;
+    background: transparent;
+    color: #555;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    transition: background 0.22s ease, color 0.22s ease;
+}
+
+.tab-btn:first-child {
+    border-right: 1.5px solid #e0dcd6;
+}
+
+.tab-btn.active {
+    background: #072550;
+    color: #fff;
+}
+
+.tab-btn:not(.active):hover {
+    background: #e5e1da;
+}
+
+/* ── FORM VISIBILITY ── */
+
+.tab-form {
+    animation: fadeIn 0.25s ease;
+}
+
+.hidden {
+    display: none !important;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.create-btn {
+    width: 100%;
+    margin-top: 25px;
+    padding: 14px;
+    border: none;
+    background: #072550;
+    color: white;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.signin-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.signin-link a {
+    text-decoration: none;
+    color: #b44331;
+}

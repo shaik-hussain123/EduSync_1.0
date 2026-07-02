@@ -1,0 +1,268 @@
+<div id="student-dashboard-view">
+    <!-- Profile completion banner -->
+    <div class="profile-banner hidden" id="profile-banner" role="alert">
+        <div class="profile-banner-text">
+            <h3>Complete your profile to unlock all ERP features.</h3>
+            <p>Add your semester, section, phone, and photo to get full access.</p>
+        </div>
+        <div class="profile-banner-actions">
+            <button class="btn-banner" onclick="loadView('profile')">
+                Complete Profile
+            </button>
+            <button class="btn-banner-ghost" onclick="document.getElementById('profile-banner').classList.add('hidden')">
+                Dismiss
+            </button>
+        </div>
+    </div>
+
+    <!-- Welcome -->
+    <div class="welcome-row">
+        <h1>Hello, <span id="welcome-name">Student</span>. 👋</h1>
+        <p class="welcome-sub">Here's your academic overview for today.</p>
+    </div>
+
+    <!-- Student info cards -->
+    <div class="info-grid">
+
+        <div class="info-card">
+            <div class="ic-label">USN</div>
+            <div class="ic-value" id="info-usn">—</div>
+        </div>
+
+        <div class="info-card">
+            <div class="ic-label">Department</div>
+            <div class="ic-value" id="info-dept">—</div>
+        </div>
+
+        <div class="info-card">
+            <div class="ic-label">Semester</div>
+            <div class="ic-value not-set" id="info-sem">Not Set</div>
+        </div>
+
+        <div class="info-card">
+            <div class="ic-label">Section</div>
+            <div class="ic-value not-set" id="info-sec">Not Set</div>
+        </div>
+
+        <div class="info-card">
+            <div class="ic-label">Verification</div>
+            <span class="badge badge-pending" id="info-verification">Pending</span>
+        </div>
+
+        <!-- Profile completion progress -->
+        <div class="progress-card">
+            <div class="ic-label">Profile Completion</div>
+            <div class="progress-bar-track">
+                <div class="progress-bar-fill" id="profile-bar-fill" style="width: 0%"></div>
+            </div>
+            <div class="progress-label" id="profile-bar-label">0% complete</div>
+        </div>
+
+    </div>
+
+    <!-- Quick Actions -->
+    <h2 class="section-title">Quick Actions</h2>
+    <div class="quick-grid">
+
+        <div class="quick-card" onclick="loadView('profile')">
+            <div class="quick-icon qi-navy">👤</div>
+            <h4>Complete Profile</h4>
+            <p>Add your photo, phone, semester and section.</p>
+        </div>
+
+        <div class="quick-card" onclick="loadView('face')">
+            <div class="quick-icon qi-accent">📷</div>
+            <h4>Register Face</h4>
+            <p>Capture face images to enable biometric attendance.</p>
+        </div>
+
+        <div class="quick-card" onclick="loadView('attendance')">
+            <div class="quick-icon qi-green">📅</div>
+            <h4>Scan Attendance QR</h4>
+            <p>Scan your teacher's QR to mark today's attendance.</p>
+        </div>
+
+        <div class="quick-card" onclick="loadView('leave')">
+            <div class="quick-icon qi-amber">📝</div>
+            <h4>Apply for Leave</h4>
+            <p>Submit a leave request for approval.</p>
+        </div>
+
+    </div>
+
+    <!-- Widgets -->
+    <div class="widget-grid">
+
+        <!-- Face Registration Status -->
+        <div class="widget">
+            <div class="widget-header">
+                <h3 class="widget-title">📷 Face Registration</h3>
+            </div>
+            <div id="widget-face-body">
+                <div class="empty-state">
+                    <div class="empty-icon">📷</div>
+                    <div class="empty-msg">Loading status...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today's Timetable -->
+        <div class="widget">
+            <div class="widget-header">
+                <h3 class="widget-title">📅 Today's Timetable</h3>
+                <span class="widget-action" onclick="loadView('timetable')">View All →</span>
+            </div>
+            <div id="widget-timetable-body">
+                <div class="empty-state">
+                    <div class="empty-icon">📅</div>
+                    <div class="empty-msg">Loading timetable...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Notifications -->
+        <div class="widget">
+            <div class="widget-header">
+                <h3 class="widget-title">🔔 Notifications</h3>
+                <span class="widget-action" onclick="loadView('notifications')">View All →</span>
+            </div>
+            <div id="widget-notif-body">
+                <div class="empty-state">
+                    <div class="empty-icon">🔔</div>
+                    <div class="empty-msg">Loading notifications...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Overview -->
+        <div class="widget">
+            <div class="widget-header">
+                <h3 class="widget-title">📊 Attendance Overview</h3>
+                <span class="widget-action" onclick="loadView('attendance')">Details →</span>
+            </div>
+            <div id="widget-attendance-body">
+                <div class="empty-state">
+                    <div class="empty-icon">📊</div>
+                    <div class="empty-msg">Loading attendance...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Holidays -->
+        <div class="widget">
+            <div class="widget-header">
+                <h3 class="widget-title">🎉 Upcoming Holidays</h3>
+            </div>
+            <div id="widget-holiday-body">
+                <div class="empty-state">
+                    <div class="empty-icon">🎉</div>
+                    <div class="empty-msg">Loading holidays...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Leave Requests -->
+        <div class="widget">
+            <div class="widget-header">
+                <h3 class="widget-title">📝 Leave Requests</h3>
+                <span class="widget-action" onclick="loadView('leave')">Apply Leave →</span>
+            </div>
+            <div id="widget-leave-body">
+                <div class="empty-state">
+                    <div class="empty-icon">📝</div>
+                    <div class="empty-msg">Loading leave requests...</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="teacher-dashboard-view" class="hidden">
+    <div class="welcome-row">
+        <h1>Hello, <span id="teacher-welcome-name">Teacher</span>. 👋</h1>
+        <p class="welcome-sub">Here's your teaching overview for today.</p>
+    </div>
+
+    <div class="info-grid">
+        <div class="info-card">
+            <div class="ic-label">Employee ID</div>
+            <div class="ic-value" id="teacher-employee-id">—</div>
+        </div>
+        <div class="info-card">
+            <div class="ic-label">Department</div>
+            <div class="ic-value" id="teacher-dept">—</div>
+        </div>
+        <div class="info-card">
+            <div class="ic-label">Subjects</div>
+            <div class="ic-value" id="teacher-subjects">—</div>
+        </div>
+        <div class="info-card">
+            <div class="ic-label">Today's Classes</div>
+            <div class="ic-value" id="teacher-today-classes">—</div>
+        </div>
+    </div>
+
+    <h2 class="section-title">Quick Statistics</h2>
+    <div class="quick-grid">
+        <div class="quick-card" onclick="loadView('teacher_attendance')">
+            <div class="quick-icon qi-green">📅</div>
+            <h4>Attendance Sessions</h4>
+            <p id="teacher-stat-sessions">Checking sessions…</p>
+        </div>
+        <div class="quick-card" onclick="loadView('notifications')">
+            <div class="quick-icon qi-amber">🔔</div>
+            <h4>Notifications</h4>
+            <p id="teacher-stat-notifications">Checking updates…</p>
+        </div>
+        <div class="quick-card" onclick="loadView('profile')">
+            <div class="quick-icon qi-navy">👤</div>
+            <h4>Profile Summary</h4>
+            <p id="teacher-profile-summary">Review your profile details</p>
+        </div>
+        <div class="quick-card" onclick="loadView('teacher_attendance')">
+            <div class="quick-icon qi-accent">✏️</div>
+            <h4>Start Attendance</h4>
+            <p>Open the attendance workspace for today.</p>
+        </div>
+    </div>
+
+    <div class="widget-grid">
+        <div class="widget">
+            <div class="widget-header">
+                <h3 class="widget-title">📚 Today's Classes</h3>
+            </div>
+            <div id="teacher-classes-body">
+                <div class="empty-state">
+                    <div class="empty-icon">📚</div>
+                    <div class="empty-msg">Loading classes…</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="widget">
+            <div class="widget-header">
+                <h3 class="widget-title">🧾 Recent Attendance Sessions</h3>
+            </div>
+            <div id="teacher-sessions-body">
+                <div class="empty-state">
+                    <div class="empty-icon">🧾</div>
+                    <div class="empty-msg">Loading sessions…</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="widget">
+            <div class="widget-header">
+                <h3 class="widget-title">🔔 Notifications</h3>
+                <span class="widget-action" onclick="loadView('notifications')">View All →</span>
+            </div>
+            <div id="teacher-notifications-body">
+                <div class="empty-state">
+                    <div class="empty-icon">🔔</div>
+                    <div class="empty-msg">Loading notifications…</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

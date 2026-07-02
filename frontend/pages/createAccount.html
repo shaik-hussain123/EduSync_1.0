@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration</title>
+    <link rel="stylesheet" href="../css/signup.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- LEFT SIDE -->
+        <div class="left-panel">
+            <div class="logo">
+                <div class="logo-icon">🛡️</div>
+                <h3>EduSync</h3>
+            </div>
+
+            <div class="hero-content">
+                <h1>Join the register.</h1>
+                <p>
+                    One profile, every class.<br>
+                    Pick your role to see the right dashboard.
+                </p>
+            </div>
+        </div>
+
+        <!-- RIGHT SIDE -->
+        <div class="right-panel">
+
+            <div class="form-container">
+
+                <h2>Student Registration</h2>
+                <p class="subtitle">Fill in your details below.</p>
+
+                <!-- STUDENT FORM -->
+                <form id="form-student" class="tab-form" onsubmit="registerStudent(event)">
+                    <label for="s-name">Full Name</label>
+                    <input id="s-name" type="text" placeholder="e.g.Syed Afan " required>
+
+                    <div class="row">
+                        <div>
+                            <label for="s-email">College Email</label>
+                            <input id="s-email" type="email" placeholder="student@college.edu" required>
+                        </div>
+                        <div>
+                            <label for="s-pass">Password</label>
+                            <input id="s-pass" type="password" placeholder="••••••••" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div>
+                            <label for="s-confirm-pass">Confirm Password</label>
+                            <input id="s-confirm-pass" type="password" placeholder="••••••••" required>
+                        </div>
+                        <div>
+                            <label for="s-usn">USN</label>
+                            <input id="s-usn" type="text" placeholder="1AA22CS001" required>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 24px;">
+                        <label for="s-dept">Department</label>
+                        <select id="s-dept" class="select-field" required>
+                            <option value="" disabled selected>Select</option>
+                        </select>
+                    </div>
+
+                    <button class="create-btn" type="submit">Create Student Account</button>
+                </form>
+
+                <p class="signin-link">Already registered? <a href="signin.html">Sign In</a></p>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/auth.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,52 @@
+/* frontend/css/leave.css */
+.leave-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    margin-bottom: 24px;
+}
+.leave-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 24px;
+}
+@media (max-width: 768px) {
+    .leave-grid {
+        grid-template-columns: 1fr;
+    }
+}
+.leave-status {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    display: inline-block;
+}
+.leave-status.Pending { background: #fff3cd; color: #856404; }
+.leave-status.Approved { background: #d1e7dd; color: #0f5132; }
+.leave-status.Rejected { background: #f8d7da; color: #842029; }
+.leave-status.Cancelled { background: #e2e3e5; color: #383d41; }
+.leave-status.Completed { background: #cff4fc; color: #055160; }
+.leave-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.leave-table th, .leave-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    vertical-align: top;
+}
+.leave-table th {
+    font-weight: 600;
+    color: #555;
+    background: #f9f9f9;
+}
+.remarks-box {
+    background: #f8f9fa;
+    border-left: 3px solid #ddd;
+    padding: 8px;
+    font-size: 13px;
+    margin-top: 4px;
+}

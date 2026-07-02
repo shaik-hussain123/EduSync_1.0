@@ -1,0 +1,71 @@
+.notifications-page .pf-card {
+    border: 1px solid rgba(13, 110, 253, 0.12);
+    border-radius: 16px;
+    padding: 20px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+.notification-item {
+    display: flex;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid #eef2f7;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-item.unread {
+    background: #f8fbff;
+}
+
+.notification-icon {
+    font-size: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.notification-title {
+    font-weight: 700;
+    color: #23374d;
+}
+
+.notification-message {
+    color: #5b6b7a;
+    margin-bottom: 8px;
+}
+
+.notification-meta {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.notification-date {
+    font-size: 12px;
+    color: #7b8a99;
+}
+
+.notification-actions {
+    display: flex;
+    gap: 8px;
+}

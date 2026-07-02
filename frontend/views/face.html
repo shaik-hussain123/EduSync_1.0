@@ -1,0 +1,98 @@
+<div id="face-view-container">
+    
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+        <div>
+            <h2 class="pf-heading">Face Registration</h2>
+            <p class="pf-sub">Secure your account with biometric access</p>
+        </div>
+    </div>
+
+    <!-- Alert Box -->
+    <div class="alert" id="face-alert" style="display:none;" role="alert"></div>
+
+    <!-- Loading State -->
+    <div id="face-loading" class="text-center py-5">
+        <div class="spinner-border text-secondary mb-3" role="status"></div>
+        <p>Checking registration status...</p>
+    </div>
+
+    <!-- Status View (Shown if already registered) -->
+    <div id="face-status-view" class="face-card text-center" style="display:none;">
+        <div class="status-badge-lg registered" id="face-status-badge">✅ Registered</div>
+        <div class="pf-field-grid mt-4" style="text-align: left; max-width: 500px; margin: 0 auto;">
+            <div class="pf-field">
+                <div class="pf-field-label">Status</div>
+                <div class="pf-field-value" id="fs-status">Registered</div>
+            </div>
+            <div class="pf-field">
+                <div class="pf-field-label">Images Captured</div>
+                <div class="pf-field-value" id="fs-images">8 / 8</div>
+            </div>
+            <div class="pf-field">
+                <div class="pf-field-label">Quality</div>
+                <div class="pf-field-value" id="fs-quality">Excellent</div>
+            </div>
+            <div class="pf-field">
+                <div class="pf-field-label">Version</div>
+                <div class="pf-field-value" id="fs-version">1</div>
+            </div>
+            <div class="pf-field">
+                <div class="pf-field-label">Registration Date</div>
+                <div class="pf-field-value" id="fs-date">—</div>
+            </div>
+        </div>
+        <div class="mt-4" id="registered-actions">
+            <p class="text-muted small">Need to update your face data?</p>
+            <button class="btn-secondary-erp" id="btn-request-reset" onclick="requestFaceReset()">Request Reset</button>
+        </div>
+        <div class="mt-4" id="unregistered-actions" style="display:none;">
+            <button class="btn-primary-erp" id="btn-start-register" onclick="showRegisterView()">Register Face</button>
+        </div>
+    </div>
+
+    <!-- Registration View (Shown if not registered) -->
+    <div id="face-register-view" style="display:none;">
+        
+        <div class="face-card">
+            <div class="face-progress-text" id="face-progress-text">Step 1 of 8: Look straight</div>
+            <div class="face-progress-bar">
+                <div class="face-progress-fill" id="face-progress-fill"></div>
+            </div>
+
+            <!-- Camera Setup -->
+            <div class="camera-container" id="camera-container">
+                <video id="webcam" autoplay playsinline class="camera-feed"></video>
+                <div class="camera-instruction" id="camera-instruction">Initializing camera...</div>
+            </div>
+            
+            <!-- Hidden Canvas for capturing frames -->
+            <canvas id="capture-canvas" style="display:none;"></canvas>
+
+            <!-- Controls -->
+            <div class="camera-controls">
+                <button class="btn-primary-erp" id="btn-capture" onclick="captureFrame()" disabled>
+                    📷 Capture Image
+                </button>
+            </div>
+        </div>
+
+        <div class="face-card">
+            <div class="pf-section-title">Captured Images</div>
+            <div class="thumbnail-grid" id="thumbnail-grid">
+                <!-- Javascript will inject 8 placeholders/thumbnails here -->
+            </div>
+            
+            <div class="d-flex justify-content-end gap-3 mt-4">
+                <button class="btn-secondary-erp" id="btn-restart" onclick="restartCapture()" style="display:none;">
+                    🔄 Restart All
+                </button>
+                <button class="btn-primary-erp" id="btn-submit" onclick="submitFaceData()" style="display:none;">
+                    🚀 Submit Registration
+                </button>
+            </div>
+        </div>
+        
+    </div>
+
+</div>

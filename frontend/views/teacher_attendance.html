@@ -1,0 +1,97 @@
+<div id="teacher-attendance-view">
+    <div class="ta-header d-flex justify-content-between align-items-center">
+        <div>
+            <h2>Attendance Management</h2>
+            <p class="text-muted">Generate dynamic QR codes for secure check-ins.</p>
+        </div>
+    </div>
+
+    <!-- Alert Box -->
+    <div class="alert" id="ta-alert" style="display:none;" role="alert"></div>
+
+    <div class="ta-grid">
+        <!-- Left Column: Controls -->
+        <div class="ta-card" id="ta-setup-card">
+            <h4>Start New Session</h4>
+            <form id="form-start-session" onsubmit="event.preventDefault(); startSession();">
+                <div class="mb-3">
+                    <label>Department</label>
+                    <select class="form-select" id="sess-dept" required>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Information Science">Information Science</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label>Semester</label>
+                    <select class="form-select" id="sess-sem" required>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label>Section</label>
+                    <select class="form-select" id="sess-sec" required>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label>Subject</label>
+                    <input type="text" class="form-control" id="sess-sub" required placeholder="e.g. Data Structures">
+                </div>
+                <div class="mb-3">
+                    <label>Room</label>
+                    <input type="text" class="form-control" id="sess-room" required placeholder="e.g. Lab 1">
+                </div>
+                <button type="submit" class="btn btn-primary w-100" id="btn-start-sess">Generate QR Session</button>
+            </form>
+        </div>
+
+        <div class="ta-card" id="ta-active-card" style="display:none;">
+            <h4>Active Session <span id="sess-status" class="ta-status active">ACTIVE</span></h4>
+            <p><strong>Subject:</strong> <span id="lbl-sub"></span> | <strong>Room:</strong> <span id="lbl-room"></span></p>
+            
+            <div class="qr-container mt-4" id="qr-container">
+                <div id="qrcode"></div>
+                <div class="qr-timer" id="qr-timer">15</div>
+                <p class="text-muted mt-2">Next QR rotation...</p>
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+                <button class="btn btn-warning flex-grow-1" id="btn-pause" onclick="pauseSession()">Pause</button>
+                <button class="btn btn-success flex-grow-1" id="btn-resume" onclick="resumeSession()" style="display:none;">Resume</button>
+                <button class="btn btn-danger flex-grow-1" id="btn-end" onclick="endSession()">End Session</button>
+            </div>
+        </div>
+
+        <!-- Right Column: Live Feed -->
+        <div class="ta-card">
+            <h4>Live Attendance Feed</h4>
+            <div class="d-flex justify-content-between mb-3">
+                <span>Total Present: <strong id="live-count">0</strong></span>
+            </div>
+            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                <table class="live-table">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>USN</th>
+                            <th>Status</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="live-table-body">
+                        <tr><td colspan="4" class="text-center text-muted">Waiting for scans...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- QR Code Library -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>

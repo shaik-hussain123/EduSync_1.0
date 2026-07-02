@@ -1,0 +1,73 @@
+<div id="leave-view">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Leave Management</h2>
+            <p class="text-muted">Apply for leaves and track your request status.</p>
+        </div>
+    </div>
+
+    <div class="alert" id="leave-alert" style="display:none;" role="alert"></div>
+
+    <div class="leave-grid">
+        <!-- Left Column: Application Form -->
+        <div class="leave-card">
+            <h4>Apply for Leave</h4>
+            <form id="form-leave-apply" onsubmit="event.preventDefault(); submitLeaveRequest();" class="mt-3">
+                <div class="mb-3">
+                    <label class="form-label">Leave Type</label>
+                    <select class="form-select" id="leave-type-select" required onchange="checkAttachmentRequirement()">
+                        <option value="">Select type...</option>
+                    </select>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <label class="form-label">From Date</label>
+                        <input type="date" class="form-control" id="leave-from" required onchange="calculateTotalDays()">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">To Date</label>
+                        <input type="date" class="form-control" id="leave-to" required onchange="calculateTotalDays()">
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="small fw-bold">Total Days: <span id="leave-total-days" class="text-primary">0</span></div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Reason</label>
+                    <textarea class="form-control" id="leave-reason" rows="3" required placeholder="Please provide a valid reason..."></textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Attachment <span id="attachment-req" class="text-muted small">(Optional)</span></label>
+                    <input class="form-control" type="file" id="leave-attachment" accept=".pdf,.jpg,.jpeg,.png">
+                    <div class="form-text">Max 5MB. Allowed: PDF, JPG, PNG.</div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-100" id="btn-submit-leave">Submit Request</button>
+            </form>
+        </div>
+
+        <!-- Right Column: History -->
+        <div class="leave-card">
+            <h4>Leave History</h4>
+            <div class="table-responsive mt-3" style="max-height: 500px; overflow-y: auto;">
+                <table class="leave-table">
+                    <thead>
+                        <tr>
+                            <th>Applied</th>
+                            <th>Type & Duration</th>
+                            <th>Status & Remarks</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leave-history-body">
+                        <tr><td colspan="4" class="text-center text-muted">Loading history...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

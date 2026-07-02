@@ -1,0 +1,181 @@
+﻿/* ═══════════════════════════════════════════════════════════════
+   PROFILE MODULE STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Page title */
+.pf-heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--dark);
+}
+
+.pf-sub { font-size: 14px; color: var(--muted); margin-top: 2px; }
+
+/* Cards */
+.pf-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px;
+}
+
+.pf-card-top {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.pf-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+/* Photo */
+.pf-photo-area {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.pf-photo-img {
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--border);
+}
+
+.pf-avatar-placeholder {
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 36px;
+  font-weight: 600;
+  border: 3px solid var(--border);
+}
+
+.pf-photo-btn {
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 30px; height: 30px;
+  background: var(--navy);
+  color: white;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+  border: 2px solid white;
+  transition: background 0.2s;
+}
+
+.pf-photo-btn:hover { background: var(--navy-light); }
+.pf-photo-btn.hidden { display: none; }
+
+/* Identity */
+.pf-identity { flex: 1; }
+.pf-name { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; color: var(--dark); }
+.pf-usn  { font-size: 14px; color: var(--muted); margin: 4px 0 10px; }
+
+/* Completion widget */
+.pf-completion { text-align: right; }
+.pf-pct-label  { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.pf-pct-num    { font-size: 28px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+
+/* Field grid */
+.pf-field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.pf-field { display: flex; flex-direction: column; gap: 6px; }
+
+.pf-field-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pf-field-value {
+  font-size: 15px;
+  color: var(--dark);
+  font-weight: 500;
+}
+
+.not-set { color: var(--muted); font-style: italic; font-weight: 400; }
+
+.read-only-tag {
+  font-size: 9px;
+  letter-spacing: 1px;
+  background: #e5e7eb;
+  color: var(--muted);
+  border-radius: 4px;
+  padding: 1px 5px;
+  text-transform: uppercase;
+}
+
+/* Edit inputs */
+.pf-input {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  color: var(--dark);
+  background: var(--white);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.pf-input:focus { border-color: var(--navy); }
+.pf-input-readonly { background: #f9f9f9; color: var(--muted); cursor: not-allowed; }
+
+/* Buttons */
+.btn-primary-erp {
+  background: var(--navy);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 11px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-primary-erp:hover    { background: var(--navy-light); }
+.btn-primary-erp:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btn-secondary-erp {
+  background: #f3f4f6;
+  color: var(--dark);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 22px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-secondary-erp:hover { background: #e5e7eb; }
+
+@media (max-width: 600px) {
+  .pf-card-top { flex-direction: column; align-items: flex-start; }
+  .pf-completion { text-align: left; }
+  .pf-field-grid { grid-template-columns: 1fr; }
+}
+

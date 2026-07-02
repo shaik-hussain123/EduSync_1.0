@@ -1,0 +1,145 @@
+/* ── Password field with eye toggle ── */
+
+.password-wrap {
+    position: relative;
+}
+
+.password-wrap input {
+    padding-right: 44px;
+}
+
+.toggle-pass {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 0;
+    color: #888;
+    transition: color 0.2s;
+}
+
+.toggle-pass:hover {
+    color: #072550;
+}
+
+/* ── Remember me + Forgot password row ── */
+
+.form-footer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 14px;
+    margin-bottom: 4px;
+}
+
+.remember-label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    color: #555;
+    cursor: pointer;
+    margin: 0;           /* override global label margin */
+}
+
+.remember-label input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    accent-color: #072550;
+    cursor: pointer;
+}
+
+.forgot-link {
+    font-size: 13px;
+    color: #b44331;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.forgot-link:hover {
+    opacity: 0.75;
+}
+
+/* ── Error message ── */
+
+.error-msg {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: #fef2f2;
+    border: 1px solid #fca5a5;
+    color: #b91c1c;
+    font-size: 13px;
+    text-align: center;
+    animation: fadeIn 0.2s ease;
+}
+
+/* ── Stat cards on left panel ── */
+
+.stat-cards {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    backdrop-filter: blur(4px);
+}
+
+.stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 30px;
+    color: #fff;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.65);
+    letter-spacing: 0.3px;
+}
+
+/* ── Loading state for submit button ── */
+
+.create-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* ── Field-level validation ── */
+
+input.input-error {
+    border-color: #e53e3e;
+    box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.12);
+    animation: shake 0.28s ease;
+}
+
+@keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25%      { transform: translateX(-4px); }
+    75%      { transform: translateX(4px); }
+}
+
+.field-hint {
+    display: block;
+    font-size: 12px;
+    color: #c53030;
+    margin-top: 5px;
+    padding-left: 2px;
+    min-height: 16px;
+    animation: fadeIn 0.2s ease;
+}
